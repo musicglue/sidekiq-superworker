@@ -5,7 +5,7 @@ module Sidekiq
         Superworker.debug "#{subjob.to_info}: Trying to enqueue"
         # Only enqueue subjobs that aren't running, complete, etc
         return unless subjob.status == 'initialized'
-        
+
         Superworker.debug "#{subjob.to_info}: Enqueueing"
         # If this is a parallel subjob, enqueue all of its children
         if subjob.subworker_class == 'parallel'
@@ -48,7 +48,7 @@ module Sidekiq
 
         # If sidekiq-unique-jobs is being used for this worker, a number of issues arise if the subjob isn't
         # queued, so we'll bypass the unique functionality of the worker while running the subjob.
-        is_unique = klass.respond_to?(:sidekiq_options_hash) && !!klass.sidekiq_options_hash['unique']
+        is_unique = klass.respond_to?(:sidekiq_options_hash) && !!(klass.sidekiq_options_hash || {})['unique']
         if is_unique
           unique_value = klass.sidekiq_options_hash.delete('unique')
           unique_job_expiration_value = klass.sidekiq_options_hash.delete('unique_job_expiration')
